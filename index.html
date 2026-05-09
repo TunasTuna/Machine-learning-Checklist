@@ -3,608 +3,907 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ML Roadmap — Tan's Checklist</title>
+<title>ML Roadmap — Checklist</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;500&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0d0d0f;
-    --surface: #16161a;
-    --surface2: #1e1e24;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.13);
-    --text: #e8e6e0;
-    --muted: #7a7870;
-    --dim: #4a4845;
+:root {
+  --bg: #08090c;
+  --bg2: #0f1015;
+  --surface: #13141a;
+  --surface2: #1a1b23;
+  --surface3: #21222d;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.11);
+  --border3: rgba(255,255,255,0.18);
+  --text: #e9e7f0;
+  --text2: #9b99a8;
+  --text3: #5a5868;
+  --blue: #5b9cf6;
+  --blue2: #3b7de8;
+  --green: #4ade80;
+  --green2: #22c55e;
+  --amber: #fbbf24;
+  --purple: #c084fc;
+  --coral: #fb7185;
+  --teal: #2dd4bf;
+}
 
-    --blue: #4f8ef7;
-    --blue-bg: rgba(79,142,247,0.1);
-    --green: #4ecb8d;
-    --green-bg: rgba(78,203,141,0.1);
-    --amber: #f5a623;
-    --amber-bg: rgba(245,166,35,0.1);
-    --purple: #a78bfa;
-    --purple-bg: rgba(167,139,250,0.1);
-    --coral: #f87171;
-    --coral-bg: rgba(248,113,113,0.1);
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Figtree', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: none;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    line-height: 1.6;
-    min-height: 100vh;
-    padding: 0 0 80px;
-  }
+/* Custom cursor */
+#cursor {
+  position: fixed;
+  width: 10px; height: 10px;
+  background: var(--blue);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background 0.2s;
+  mix-blend-mode: screen;
+}
+#cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(91,156,246,0.35);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: width 0.25s, height 0.25s, border-color 0.2s;
+}
+body.hovering #cursor { width: 16px; height: 16px; background: var(--green); }
+body.hovering #cursor-ring { width: 50px; height: 50px; border-color: rgba(74,222,128,0.3); }
 
-  /* noise texture overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.35;
-  }
+/* Grid bg */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(91,156,246,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91,156,246,0.022) 1px, transparent 1px);
+  background-size: 52px 52px;
+  pointer-events: none;
+  z-index: 0;
+}
 
-  .container {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 0 24px;
-    position: relative;
-    z-index: 1;
-  }
+/* Glow blobs */
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+  animation: blobFloat 10s ease-in-out infinite;
+}
+.blob-1 { width: 500px; height: 500px; background: rgba(91,156,246,0.065); top: -80px; right: -120px; animation-delay: 0s; }
+.blob-2 { width: 380px; height: 380px; background: rgba(74,222,128,0.045); bottom: 15%; left: -120px; animation-delay: 3.5s; }
+.blob-3 { width: 280px; height: 280px; background: rgba(192,132,252,0.04); top: 55%; right: 8%; animation-delay: 6s; }
+@keyframes blobFloat {
+  0%,100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.06); }
+}
 
-  /* Header */
-  header {
-    padding: 52px 0 40px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 40px;
-  }
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 24px 100px;
+  position: relative;
+  z-index: 1;
+}
 
-  .header-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 32px; left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 11px 20px;
+  font-size: 13px;
+  color: var(--text);
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  h1 {
-    font-family: 'Space Mono', monospace;
-    font-size: clamp(22px, 4vw, 32px);
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.2;
-    margin-bottom: 16px;
-  }
+/* Header */
+header { padding: 64px 0 44px; }
 
-  h1 span {
-    color: var(--blue);
-  }
+.header-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--blue);
+  background: rgba(91,156,246,0.1);
+  border: 1px solid rgba(91,156,246,0.22);
+  border-radius: 99px;
+  padding: 4px 13px;
+  margin-bottom: 24px;
+  letter-spacing: 0.05em;
+}
+.pulse-dot {
+  width: 6px; height: 6px;
+  background: var(--blue);
+  border-radius: 50%;
+  animation: blink 1.8s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
-  .header-meta {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(30px, 5.5vw, 50px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 18px;
+}
+h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--teal) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-  .progress-pill {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: 99px;
-    padding: 6px 16px 6px 10px;
-  }
+.header-desc {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 500px;
+  line-height: 1.65;
+  margin-bottom: 36px;
+}
 
-  .progress-circle {
-    width: 28px;
-    height: 28px;
-  }
+/* Stats */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.stat-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.stat-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 5px;
+  transition: color 0.3s;
+}
+.stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
 
-  .progress-circle svg {
-    transform: rotate(-90deg);
-  }
+/* Global progress */
+.global-progress {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 26px;
+  margin-bottom: 32px;
+}
 
-  .progress-circle circle {
-    fill: none;
-    stroke-width: 3;
-    stroke-linecap: round;
-  }
+.ring-wrap { position: relative; flex-shrink: 0; }
+.ring-wrap svg { transform: rotate(-90deg); display: block; }
+.ring-track { fill: none; stroke: var(--surface3); stroke-width: 5; }
+.ring-fill {
+  fill: none; stroke-width: 5; stroke-linecap: round;
+  stroke: url(#rg);
+  transition: stroke-dashoffset 0.7s cubic-bezier(0.34,1.56,0.64,1);
+}
+.ring-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.ring-pct-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px; font-weight: 800;
+  color: var(--text); line-height: 1;
+}
+.ring-pct-sub {
+  font-size: 9px;
+  color: var(--text3);
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
 
-  .progress-circle .track { stroke: var(--border2); }
-  .progress-circle .fill { stroke: var(--blue); transition: stroke-dashoffset 0.5s ease; }
+.progress-info { flex: 1; }
+.progress-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px; font-weight: 700;
+  margin-bottom: 5px;
+}
+.progress-sub { font-size: 13px; color: var(--text2); margin-bottom: 14px; line-height: 1.5; }
+.prog-bar-outer {
+  height: 5px; background: var(--surface3); border-radius: 3px; overflow: hidden;
+}
+.prog-bar-inner {
+  height: 5px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--blue2), var(--teal));
+  transition: width 0.7s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+}
+.prog-bar-inner::after {
+  content: '';
+  position: absolute; right: 0; top: 0; bottom: 0; width: 32px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25));
+}
 
-  .progress-text {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    color: var(--text);
-  }
+/* Milestone */
+.milestone-banner {
+  background: linear-gradient(135deg, rgba(74,222,128,0.07), rgba(45,212,191,0.04));
+  border: 1px solid rgba(74,222,128,0.18);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  animation: fadeUp 0.4s ease;
+}
+.milestone-banner.visible { display: flex; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.m-icon { font-size: 24px; }
+.m-title { font-size: 14px; font-weight: 600; color: var(--green); }
+.m-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
 
-  .progress-text span {
-    color: var(--muted);
-  }
+/* Filter + controls */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.filter-tab {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 6px 13px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.04em;
+}
+.filter-tab:hover { border-color: var(--border2); color: var(--text2); }
+.filter-tab.active { border-color: var(--blue); background: rgba(91,156,246,0.1); color: var(--blue); }
 
-  .reset-btn {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 6px 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.05em;
-  }
+.ctrl-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 6px 13px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.04em;
+}
+.ctrl-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border3); }
+.ctrl-btn.red:hover { border-color: var(--coral); color: var(--coral); }
 
-  .reset-btn:hover {
-    color: var(--text);
-    border-color: var(--border2);
-    background: var(--surface);
-  }
+.spacer { flex: 1; }
 
-  /* Phase cards */
-  .phase {
-    margin-bottom: 16px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
+.streak {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--amber);
+  background: rgba(251,191,36,0.1);
+  border: 1px solid rgba(251,191,36,0.2);
+  border-radius: 99px;
+  padding: 4px 12px;
+}
+.streak.show { display: flex; }
 
-  .phase:hover { border-color: var(--border2); }
+/* Phases */
+.phase {
+  margin-bottom: 10px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+  transition: border-color 0.25s;
+  animation: fadeUp 0.45s ease both;
+}
+.phase:hover { border-color: var(--border2); }
+.phase.complete { border-color: rgba(74,222,128,0.22); }
 
-  .phase-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 18px 20px;
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.15s;
-  }
+.phase-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 18px 20px;
+  cursor: pointer; user-select: none;
+  transition: background 0.15s;
+}
+.phase-header:hover { background: var(--surface2); }
 
-  .phase-header:hover { background: var(--surface2); }
+.phase-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 500; flex-shrink: 0;
+  transition: transform 0.3s;
+}
+.phase-header:hover .phase-icon { transform: scale(1.1) rotate(-3deg); }
 
-  .phase-num {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
+.phase-info { flex: 1; min-width: 0; }
+.phase-title-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px; font-weight: 700; margin-bottom: 2px;
+}
+.phase-sub-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--text3);
+}
 
-  .phase-info { flex: 1; min-width: 0; }
+.phase-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.phase-pct-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: var(--text3); min-width: 32px; text-align: right;
+}
 
-  .phase-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 2px;
-  }
+.chevron {
+  width: 22px; height: 22px; border-radius: 6px;
+  background: var(--surface3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: var(--text3);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), background 0.2s;
+}
+.phase.open .chevron { transform: rotate(180deg); background: var(--surface2); }
 
-  .phase-sub {
-    font-size: 12px;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-  }
+.phase-prog-strip { height: 2px; background: var(--surface3); }
+.phase-prog-bar { height: 2px; transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1); }
 
-  .phase-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-  }
+.phase-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.phase.open .phase-body { max-height: 1400px; }
+.phase-body-inner { padding: 12px 18px 20px; }
 
-  .phase-count {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-  }
+/* Tasks */
+.task {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 10px;
+  border-radius: 9px; cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 2px;
+}
+.task:hover { background: var(--surface2); }
+.task:active { transform: scale(0.99); }
 
-  .phase-chevron {
-    color: var(--dim);
-    font-size: 12px;
-    transition: transform 0.25s ease;
-  }
+.task-box {
+  width: 21px; height: 21px; border-radius: 6px;
+  border: 1.5px solid var(--border3);
+  flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  background: transparent;
+  overflow: hidden; position: relative;
+}
+.task-box::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(74,222,128,0.12);
+  transform: scale(0);
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  border-radius: 4px;
+}
+.task.done .task-box { border-color: var(--green2); }
+.task.done .task-box::before { transform: scale(1); }
 
-  .phase.open .phase-chevron { transform: rotate(180deg); }
+.check-icon {
+  position: relative; z-index: 1;
+  opacity: 0; transform: scale(0) rotate(-15deg);
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  color: var(--green); display: block;
+}
+.task.done .check-icon { opacity: 1; transform: scale(1) rotate(0deg); }
 
-  .phase-bar {
-    height: 2px;
-    background: var(--border);
-    margin: 0 20px;
-  }
+.task-body { flex: 1; }
+.task-label {
+  font-size: 14px; color: var(--text); line-height: 1.5;
+  transition: color 0.2s;
+}
+.task.done .task-label { color: var(--text3); text-decoration: line-through; text-decoration-color: var(--text3); }
+.task-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; padding: 2px 7px; border-radius: 5px;
+  margin-top: 4px; letter-spacing: 0.04em;
+}
 
-  .phase-bar-fill {
-    height: 2px;
-    border-radius: 1px;
-    transition: width 0.4s ease;
-    width: 0%;
-  }
+/* Resources */
+.resources-box {
+  margin-top: 14px; padding: 14px;
+  background: var(--surface2); border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.res-head {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+.res-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.res-chip {
+  font-size: 12px; padding: 5px 11px;
+  border-radius: 7px; border: 1px solid var(--border2);
+  color: var(--text2); background: var(--surface);
+  transition: all 0.18s; cursor: default;
+}
+.res-chip:hover { border-color: var(--border3); color: var(--text); transform: translateY(-1px); }
 
-  /* Tasks */
-  .phase-body {
-    display: none;
-    padding: 14px 20px 20px;
-  }
+/* Confetti */
+.confetti-piece {
+  position: fixed; pointer-events: none; z-index: 9999;
+  animation: cfall linear forwards;
+  border-radius: 2px;
+}
+@keyframes cfall {
+  0%   { opacity: 1; }
+  100% { opacity: 0; transform: translateY(110vh) rotate(720deg); }
+}
 
-  .phase.open .phase-body { display: block; }
+footer {
+  margin-top: 48px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between;
+  align-items: center; flex-wrap: wrap; gap: 8px;
+}
+.footer-note {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--text3);
+}
 
-  .task {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
-
-  .task:last-of-type { border-bottom: none; }
-  .task:hover { opacity: 0.85; }
-
-  .task-check {
-    width: 20px;
-    height: 20px;
-    border-radius: 5px;
-    border: 1.5px solid var(--dim);
-    background: transparent;
-    flex-shrink: 0;
-    margin-top: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-  }
-
-  .task.done .task-check {
-    border-color: var(--green);
-    background: var(--green-bg);
-  }
-
-  .task.done .task-check::after {
-    content: '';
-    display: block;
-    width: 5px;
-    height: 9px;
-    border: 2px solid var(--green);
-    border-top: none;
-    border-left: none;
-    transform: rotate(45deg) translate(-1px, -1px);
-  }
-
-  .task-text {
-    font-size: 14px;
-    color: var(--text);
-    flex: 1;
-    line-height: 1.5;
-    transition: color 0.2s;
-  }
-
-  .task.done .task-text {
-    color: var(--dim);
-    text-decoration: line-through;
-    text-decoration-color: var(--muted);
-  }
-
-  .task-tag {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 4px;
-    flex-shrink: 0;
-    margin-top: 3px;
-    letter-spacing: 0.04em;
-  }
-
-  /* Resources */
-  .resources {
-    margin-top: 16px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border);
-  }
-
-  .res-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: var(--dim);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .res-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .res-chip {
-    font-size: 12px;
-    padding: 5px 11px;
-    border-radius: 6px;
-    border: 1px solid var(--border2);
-    color: var(--muted);
-    background: var(--surface2);
-    cursor: default;
-    transition: all 0.15s;
-  }
-
-  .res-chip:hover {
-    color: var(--text);
-    border-color: rgba(255,255,255,0.2);
-  }
-
-  /* Footer total */
-  .footer {
-    margin-top: 48px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .footer-note {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--dim);
-  }
-
-  .footer-note a {
-    color: var(--muted);
-    text-decoration: none;
-  }
-
-  /* Animations */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .phase {
-    animation: fadeIn 0.4s ease both;
-  }
-
-  .phase:nth-child(1) { animation-delay: 0.05s; }
-  .phase:nth-child(2) { animation-delay: 0.1s; }
-  .phase:nth-child(3) { animation-delay: 0.15s; }
-  .phase:nth-child(4) { animation-delay: 0.2s; }
-  .phase:nth-child(5) { animation-delay: 0.25s; }
-
-  @media (max-width: 520px) {
-    .phase-header { padding: 14px 16px; }
-    .phase-body { padding: 12px 16px 16px; }
-    .phase-bar { margin: 0 16px; }
-  }
+@media(max-width:560px){
+  .stats-bar { grid-template-columns: repeat(2,1fr); }
+  .global-progress { flex-direction: column; align-items: flex-start; gap: 16px; }
+  h1 { font-size: 28px; }
+  header { padding: 44px 0 32px; }
+}
 </style>
 </head>
 <body>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<div id="toast"></div>
+
 <div class="container">
   <header>
-    <div class="header-label">// ml-roadmap / checklist</div>
-    <h1>Build &amp; Train a<br><span>Custom ML Model</span></h1>
-    <div class="header-meta">
-      <div class="progress-pill">
-        <div class="progress-circle">
-          <svg width="28" height="28" viewBox="0 0 28 28">
-            <circle class="track" cx="14" cy="14" r="11" stroke-dasharray="69.1" stroke-dashoffset="0"/>
-            <circle class="fill" id="global-ring" cx="14" cy="14" r="11" stroke-dasharray="69.1" stroke-dashoffset="69.1"/>
-          </svg>
-        </div>
-        <span class="progress-text" id="global-text">0 <span>/ 24 tasks</span></span>
-      </div>
-      <button class="reset-btn" onclick="resetAll()">↺ reset</button>
-    </div>
+    <div class="header-tag"><span class="pulse-dot"></span>ml-roadmap · beginner track</div>
+    <h1>Build &amp; Train a<br><em>Custom ML Model</em></h1>
+    <p class="header-desc">Your personal checklist for going from zero to a deployed ML model. Check off tasks as you complete them — progress saves automatically.</p>
   </header>
 
-  <div id="phases"></div>
-
-  <div class="footer">
-    <span class="footer-note">progress saved in browser · localStorage</span>
-    <span class="footer-note">// beginner track</span>
+  <div class="stats-bar">
+    <div class="stat-card"><div class="stat-val" id="s-done">0</div><div class="stat-label">completed</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-left">24</div><div class="stat-label">remaining</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-phases">0/5</div><div class="stat-label">phases done</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-pct">0%</div><div class="stat-label">overall</div></div>
   </div>
+
+  <div class="global-progress">
+    <div class="ring-wrap">
+      <svg width="76" height="76" viewBox="0 0 76 76">
+        <defs>
+          <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#5b9cf6"/>
+            <stop offset="100%" stop-color="#2dd4bf"/>
+          </linearGradient>
+        </defs>
+        <circle class="ring-track" cx="38" cy="38" r="32"/>
+        <circle class="ring-fill" id="ring-arc" cx="38" cy="38" r="32"
+          stroke-dasharray="201.1" stroke-dashoffset="201.1"/>
+      </svg>
+      <div class="ring-center">
+        <span class="ring-pct-text" id="ring-pct">0%</span>
+        <span class="ring-pct-sub">done</span>
+      </div>
+    </div>
+    <div class="progress-info">
+      <div class="progress-title" id="prog-title">Just getting started</div>
+      <div class="progress-sub" id="prog-sub">Check off tasks below to track your journey.</div>
+      <div class="prog-bar-outer"><div class="prog-bar-inner" id="prog-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="milestone-banner" id="milestone">
+    <div class="m-icon" id="m-icon">🎉</div>
+    <div><div class="m-title" id="m-title">Milestone!</div><div class="m-sub" id="m-sub"></div></div>
+  </div>
+
+  <div class="toolbar">
+    <button class="filter-tab active" data-f="all">All</button>
+    <button class="filter-tab" data-f="active">In progress</button>
+    <button class="filter-tab" data-f="done">Completed</button>
+    <div class="spacer"></div>
+    <button class="ctrl-btn" onclick="expandAll()">↓ expand</button>
+    <button class="ctrl-btn" onclick="collapseAll()">↑ collapse</button>
+    <button class="ctrl-btn red" onclick="askReset()">↺ reset</button>
+    <div class="streak" id="streak">🔥 <span id="streak-n">0</span>d streak</div>
+  </div>
+
+  <div id="phases-wrap"></div>
+
+  <footer>
+    <span class="footer-note">// saves to localStorage</span>
+    <span class="footer-note" id="last-save"></span>
+  </footer>
 </div>
 
 <script>
-const PHASES = [
-  {
-    title: "Math & Python foundations",
-    weeks: "Weeks 1–4",
-    color: "#4f8ef7",
-    colorBg: "rgba(79,142,247,0.12)",
-    tasks: [
-      { text: "Review linear algebra basics: vectors, matrices, dot products", tag: "Math" },
-      { text: "Learn calculus fundamentals: derivatives and the chain rule", tag: "Math" },
-      { text: "Get comfortable with probability & statistics (mean, variance, distributions)", tag: "Math" },
-      { text: "Set up Python environment with conda or venv", tag: "Python" },
-      { text: "Practice NumPy and pandas for data manipulation", tag: "Python" },
-    ],
-    resources: ["3Blue1Brown (YouTube)", "Khan Academy", "fast.ai Practical DL", "NumPy docs"]
-  },
-  {
-    title: "Core ML concepts",
-    weeks: "Weeks 5–8",
-    color: "#4ecb8d",
-    colorBg: "rgba(78,203,141,0.12)",
-    tasks: [
-      { text: "Understand supervised vs unsupervised learning", tag: "Theory" },
-      { text: "Learn the train/validation/test split concept", tag: "Theory" },
-      { text: "Implement linear regression from scratch with NumPy", tag: "Code" },
-      { text: "Implement logistic regression and understand loss functions", tag: "Code" },
-      { text: "Understand gradient descent and how models learn", tag: "Theory" },
-    ],
-    resources: ["Hands-On ML (Géron)", "StatQuest (YouTube)", "Kaggle Learn", "scikit-learn docs"]
-  },
-  {
-    title: "Scikit-learn & first projects",
-    weeks: "Weeks 9–12",
-    color: "#f5a623",
-    colorBg: "rgba(245,166,35,0.12)",
-    tasks: [
-      { text: "Build decision trees and random forests with scikit-learn", tag: "Code" },
-      { text: "Learn cross-validation, overfitting, and regularization", tag: "Theory" },
-      { text: "Complete a Kaggle competition (Titanic or House Prices)", tag: "Project" },
-      { text: "Learn feature engineering and data preprocessing pipelines", tag: "Code" },
-      { text: "Evaluate models with precision, recall, F1, and confusion matrices", tag: "Theory" },
-    ],
-    resources: ["Kaggle Competitions", "scikit-learn User Guide", "Towards Data Science"]
-  },
-  {
-    title: "Neural networks & PyTorch",
-    weeks: "Weeks 13–20",
-    color: "#a78bfa",
-    colorBg: "rgba(167,139,250,0.12)",
-    tasks: [
-      { text: "Understand how neural networks work: layers, activations, backprop", tag: "Theory" },
-      { text: "Learn PyTorch: tensors, autograd, and training loops", tag: "Code" },
-      { text: "Train a simple feedforward network on a real dataset (e.g. MNIST)", tag: "Project" },
-      { text: "Experiment with CNNs for image data or RNNs for sequences", tag: "Code" },
-    ],
-    resources: ["fast.ai course", "PyTorch tutorials", "Deep Learning (Goodfellow)", "Papers With Code"]
-  },
-  {
-    title: "Custom model & deployment",
-    weeks: "Weeks 21–28",
-    color: "#f87171",
-    colorBg: "rgba(248,113,113,0.12)",
-    tasks: [
-      { text: "Define your problem clearly: data sources, target variable, success metric", tag: "Plan" },
-      { text: "Collect, clean, and explore your dataset (EDA)", tag: "Data" },
-      { text: "Train and iterate on your custom model architecture", tag: "Train" },
-      { text: "Tune hyperparameters with a systematic approach", tag: "Train" },
-      { text: "Package and deploy the model (Flask API or Hugging Face Spaces)", tag: "Deploy" },
-    ],
-    resources: ["Hugging Face Spaces", "W&B for experiment tracking", "Streamlit for demos", "ONNX for export"]
-  }
+const PHASES=[
+  {title:"Math & Python foundations",weeks:"Weeks 1–4",num:"01",
+   color:"#5b9cf6",bg:"rgba(91,156,246,0.13)",
+   tasks:[
+    {t:"Review linear algebra basics: vectors, matrices, dot products",tag:"Math"},
+    {t:"Learn calculus fundamentals: derivatives and the chain rule",tag:"Math"},
+    {t:"Get comfortable with probability & statistics (mean, variance, distributions)",tag:"Math"},
+    {t:"Set up Python environment with conda or venv",tag:"Python"},
+    {t:"Practice NumPy and pandas for data manipulation",tag:"Python"},
+   ],
+   res:["3Blue1Brown (YouTube)","Khan Academy","fast.ai Practical DL","NumPy docs"]},
+  {title:"Core ML concepts",weeks:"Weeks 5–8",num:"02",
+   color:"#4ade80",bg:"rgba(74,222,128,0.13)",
+   tasks:[
+    {t:"Understand supervised vs unsupervised learning",tag:"Theory"},
+    {t:"Learn the train / validation / test split concept",tag:"Theory"},
+    {t:"Implement linear regression from scratch with NumPy",tag:"Code"},
+    {t:"Implement logistic regression and understand loss functions",tag:"Code"},
+    {t:"Understand gradient descent and how models learn",tag:"Theory"},
+   ],
+   res:["Hands-On ML (Géron)","StatQuest (YouTube)","Kaggle Learn","scikit-learn docs"]},
+  {title:"Scikit-learn & first projects",weeks:"Weeks 9–12",num:"03",
+   color:"#fbbf24",bg:"rgba(251,191,36,0.13)",
+   tasks:[
+    {t:"Build decision trees and random forests with scikit-learn",tag:"Code"},
+    {t:"Learn cross-validation, overfitting, and regularization",tag:"Theory"},
+    {t:"Complete a Kaggle competition (Titanic or House Prices)",tag:"Project"},
+    {t:"Learn feature engineering and data preprocessing pipelines",tag:"Code"},
+    {t:"Evaluate models: precision, recall, F1, and confusion matrices",tag:"Theory"},
+   ],
+   res:["Kaggle Competitions","scikit-learn User Guide","Towards Data Science"]},
+  {title:"Neural networks & PyTorch",weeks:"Weeks 13–20",num:"04",
+   color:"#c084fc",bg:"rgba(192,132,252,0.13)",
+   tasks:[
+    {t:"Understand how neural networks work: layers, activations, backprop",tag:"Theory"},
+    {t:"Learn PyTorch: tensors, autograd, and training loops",tag:"Code"},
+    {t:"Train a feedforward network on a real dataset (e.g. MNIST)",tag:"Project"},
+    {t:"Experiment with CNNs for image data or RNNs for sequences",tag:"Code"},
+   ],
+   res:["fast.ai course","PyTorch tutorials","Deep Learning (Goodfellow)","Papers With Code"]},
+  {title:"Custom model & deployment",weeks:"Weeks 21–28",num:"05",
+   color:"#fb7185",bg:"rgba(251,113,133,0.13)",
+   tasks:[
+    {t:"Define your problem: data sources, target variable, success metric",tag:"Plan"},
+    {t:"Collect, clean, and explore your dataset (EDA)",tag:"Data"},
+    {t:"Train and iterate on your custom model architecture",tag:"Train"},
+    {t:"Tune hyperparameters with a systematic approach",tag:"Train"},
+    {t:"Package and deploy the model (Flask API or Hugging Face Spaces)",tag:"Deploy"},
+   ],
+   res:["Hugging Face Spaces","W&B for experiment tracking","Streamlit for demos","ONNX for export"]},
 ];
 
-const TAG_COLORS = {
-  Math:    ["rgba(79,142,247,0.15)",  "#4f8ef7"],
-  Python:  ["rgba(78,203,141,0.15)",  "#4ecb8d"],
-  Theory:  ["rgba(167,139,250,0.15)", "#a78bfa"],
-  Code:    ["rgba(245,166,35,0.15)",  "#f5a623"],
-  Project: ["rgba(78,203,141,0.15)",  "#4ecb8d"],
-  Plan:    ["rgba(248,113,113,0.15)", "#f87171"],
-  Data:    ["rgba(245,166,35,0.15)",  "#f5a623"],
-  Train:   ["rgba(167,139,250,0.15)", "#a78bfa"],
-  Deploy:  ["rgba(248,113,113,0.15)", "#f87171"],
+const TAGS={
+  Math:   ["rgba(91,156,246,0.14)","#5b9cf6"],
+  Python: ["rgba(74,222,128,0.14)","#4ade80"],
+  Theory: ["rgba(192,132,252,0.14)","#c084fc"],
+  Code:   ["rgba(251,191,36,0.14)","#fbbf24"],
+  Project:["rgba(45,212,191,0.14)","#2dd4bf"],
+  Plan:   ["rgba(251,113,133,0.14)","#fb7185"],
+  Data:   ["rgba(251,191,36,0.14)","#fbbf24"],
+  Train:  ["rgba(192,132,252,0.14)","#c084fc"],
+  Deploy: ["rgba(251,113,133,0.14)","#fb7185"],
 };
 
-const STORAGE_KEY = "ml_roadmap_v1";
-let state = {};
+const MILESTONES=[
+  {pct:25, icon:"🚀",title:"25% complete!",sub:"Solid start — math and Python are paying off."},
+  {pct:50, icon:"⚡",title:"Halfway there!",sub:"Right in the middle of the ML journey."},
+  {pct:75, icon:"🔥",title:"75% done!",sub:"Almost there — the model is within reach."},
+  {pct:100,icon:"🎓",title:"All done!",sub:"You built and deployed a custom ML model."},
+];
 
-function load() {
-  try { state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { state = {}; }
-}
+const KEY="mlroadmap_v3";
+let state={}, activeFilter="all", shownM=new Set();
+const TOTAL=PHASES.reduce((s,p)=>s+p.tasks.length,0);
 
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
+function load(){ try{state=JSON.parse(localStorage.getItem(KEY))||{};}catch{state={};} }
+function save(){ state._ts=Date.now(); localStorage.setItem(KEY,JSON.stringify(state)); }
 
-const TOTAL = PHASES.reduce((s, p) => s + p.tasks.length, 0);
+function pDone(pi){ return PHASES[pi].tasks.filter((_,ti)=>state[`${pi}_${ti}`]).length; }
+function allDone(){ return PHASES.reduce((s,_,pi)=>s+pDone(pi),0); }
 
-function toggleTask(pid, tid) {
-  const key = `${pid}_${tid}`;
-  state[key] = !state[key];
-  save();
-  render();
-}
-
-function togglePhase(pid) {
-  const key = `open_${pid}`;
-  state[key] = !state[key];
-  save();
-  render();
-}
-
-function resetAll() {
-  if (!confirm("Reset all progress?")) return;
-  state = {};
-  save();
-  render();
-}
-
-function render() {
-  const container = document.getElementById("phases");
-  container.innerHTML = "";
-
-  let totalDone = 0;
-
-  PHASES.forEach((phase, pi) => {
-    const isOpen = !!state[`open_${pi}`];
-    const doneTasks = phase.tasks.filter((_, ti) => state[`${pi}_${ti}`]).length;
-    totalDone += doneTasks;
-    const pct = phase.tasks.length ? Math.round(doneTasks / phase.tasks.length * 100) : 0;
-
-    const [tc, tt] = [phase.colorBg, phase.color];
-
-    const div = document.createElement("div");
-    div.className = "phase" + (isOpen ? " open" : "");
-
-    div.innerHTML = `
-      <div class="phase-header" onclick="togglePhase(${pi})">
-        <div class="phase-num" style="background:${tc};color:${tt}">0${pi+1}</div>
-        <div class="phase-info">
-          <div class="phase-title">${phase.title}</div>
-          <div class="phase-sub">${phase.weeks} &nbsp;·&nbsp; ${doneTasks}/${phase.tasks.length}</div>
-        </div>
-        <div class="phase-right">
-          <span class="phase-count">${pct}%</span>
-          <span class="phase-chevron">▾</span>
-        </div>
-      </div>
-      <div class="phase-bar">
-        <div class="phase-bar-fill" style="width:${pct}%;background:${phase.color}"></div>
-      </div>
-      <div class="phase-body">
-        ${phase.tasks.map((t, ti) => {
-          const done = !!state[`${pi}_${ti}`];
-          const [bg, col] = TAG_COLORS[t.tag] || ["rgba(255,255,255,0.08)","#888"];
-          return `<div class="task${done ? ' done' : ''}" onclick="toggleTask(${pi},${ti})">
-            <div class="task-check"></div>
-            <div class="task-text">${t.text}</div>
-            <span class="task-tag" style="background:${bg};color:${col}">${t.tag}</span>
-          </div>`;
-        }).join("")}
-        <div class="resources">
-          <div class="res-label">Resources</div>
-          <div class="res-chips">
-            ${phase.resources.map(r => `<span class="res-chip">${r}</span>`).join("")}
-          </div>
-        </div>
-      </div>
-    `;
-
-    container.appendChild(div);
+/* ---- Render ---- */
+function render(){
+  const wrap=document.getElementById("phases-wrap");
+  wrap.innerHTML="";
+  PHASES.forEach((_,pi)=>{
+    const el=buildPhase(pi);
+    el.style.animationDelay=(pi*0.06)+"s";
+    wrap.appendChild(el);
+    applyFilter(el,pi);
   });
-
-  // Update global progress
-  const pct = Math.round(totalDone / TOTAL * 100);
-  const circ = 2 * Math.PI * 11;
-  const offset = circ - (pct / 100) * circ;
-  document.getElementById("global-ring").style.strokeDashoffset = offset;
-  document.getElementById("global-text").innerHTML = `${totalDone} <span>/ ${TOTAL} tasks</span>`;
+  updateGlobal();
 }
+
+function buildPhase(pi){
+  const p=PHASES[pi];
+  const done=pDone(pi), total=p.tasks.length;
+  const pct=Math.round(done/total*100);
+  const isOpen=!!state[`o${pi}`], isComp=done===total;
+
+  const el=document.createElement("div");
+  el.className="phase"+(isOpen?" open":"")+(isComp?" complete":"");
+  el.id=`p${pi}`;
+
+  el.innerHTML=`
+    <div class="phase-header" onclick="togglePhase(${pi})">
+      <div class="phase-icon" style="background:${p.bg};color:${p.color}">${p.num}</div>
+      <div class="phase-info">
+        <div class="phase-title-text">${p.title}</div>
+        <div class="phase-sub-text" id="ps${pi}">${p.weeks} · ${done}/${total} tasks</div>
+      </div>
+      <div class="phase-right">
+        <span class="phase-pct-label" id="pp${pi}">${pct}%</span>
+        <div class="chevron" id="ch${pi}">▾</div>
+      </div>
+    </div>
+    <div class="phase-prog-strip">
+      <div class="phase-prog-bar" id="pb${pi}" style="width:${pct}%;background:${p.color}"></div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-body-inner">
+        <div id="tl${pi}">${buildTasks(pi)}</div>
+        <div class="resources-box">
+          <div class="res-head">📚 Resources</div>
+          <div class="res-chips">${p.res.map(r=>`<span class="res-chip">${r}</span>`).join("")}</div>
+        </div>
+      </div>
+    </div>`;
+  return el;
+}
+
+function buildTasks(pi){
+  return PHASES[pi].tasks.map((t,ti)=>{
+    const done=!!state[`${pi}_${ti}`];
+    const [bg,col]=TAGS[t.tag]||["rgba(255,255,255,0.08)","#888"];
+    return `<div class="task${done?" done":""}" onclick="toggleTask(${pi},${ti})">
+      <div class="task-box">
+        <svg class="check-icon" width="11" height="9" viewBox="0 0 11 9" fill="none">
+          <path d="M1 4L4 7.5L10 1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="task-body">
+        <div class="task-label">${t.t}</div>
+        <span class="task-tag" style="background:${bg};color:${col}">${t.tag}</span>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function refreshPhase(pi){
+  const el=document.getElementById(`p${pi}`);
+  if(!el)return;
+  const done=pDone(pi), total=PHASES[pi].tasks.length;
+  const pct=Math.round(done/total*100);
+  const isComp=done===total;
+  el.classList.toggle("complete",isComp);
+  document.getElementById(`ps${pi}`).textContent=`${PHASES[pi].weeks} · ${done}/${total} tasks`;
+  document.getElementById(`pp${pi}`).textContent=pct+"%";
+  document.getElementById(`pb${pi}`).style.width=pct+"%";
+  document.getElementById(`tl${pi}`).innerHTML=buildTasks(pi);
+}
+
+function applyFilter(el,pi){
+  const done=pDone(pi), total=PHASES[pi].tasks.length;
+  if(activeFilter==="done") el.style.display=done===total?"":"none";
+  else if(activeFilter==="active") el.style.display=(done>0&&done<total)?"":"none";
+  else el.style.display="";
+}
+
+function updateGlobal(){
+  const done=allDone(), pct=Math.round(done/TOTAL*100);
+  document.getElementById("s-done").textContent=done;
+  document.getElementById("s-left").textContent=TOTAL-done;
+  const compPhases=PHASES.filter((_,pi)=>pDone(pi)===PHASES[pi].tasks.length).length;
+  document.getElementById("s-phases").textContent=`${compPhases}/5`;
+  document.getElementById("s-pct").textContent=pct+"%";
+
+  const circ=201.1;
+  document.getElementById("ring-arc").style.strokeDashoffset=circ-(pct/100)*circ;
+  document.getElementById("ring-pct").textContent=pct+"%";
+  document.getElementById("prog-bar").style.width=pct+"%";
+
+  const msgs=[
+    [0,"Just getting started","Check off tasks below to track your journey."],
+    [10,"Making moves 💪","You've crossed the starting line."],
+    [25,"Building momentum 🚀","A quarter done — math and Python are paying off."],
+    [50,"Halfway there ⚡","Right in the middle of the roadmap. Keep going."],
+    [75,"Almost there 🔥","Three-quarters done. The model is within reach."],
+    [90,"Final stretch 🎯","So close. Time to deploy!"],
+    [100,"You did it! 🎓","All tasks complete — you built a custom ML model."],
+  ];
+  let title=msgs[0][1], sub=msgs[0][2];
+  for(const[t,ti,si]of msgs){if(pct>=t){title=ti;sub=si;}}
+  document.getElementById("prog-title").textContent=title;
+  document.getElementById("prog-sub").textContent=sub;
+
+  for(const m of MILESTONES){
+    if(pct>=m.pct&&!shownM.has(m.pct)){
+      shownM.add(m.pct);
+      triggerMilestone(m);
+    }
+  }
+  updateStreak();
+  if(state._ts){
+    const d=new Date(state._ts);
+    document.getElementById("last-save").textContent=
+      `saved ${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}`;
+  }
+}
+
+function triggerMilestone(m){
+  document.getElementById("m-icon").textContent=m.icon;
+  document.getElementById("m-title").textContent=m.title;
+  document.getElementById("m-sub").textContent=m.sub;
+  const el=document.getElementById("milestone");
+  el.classList.add("visible");
+  if(m.pct>=50) spawnConfetti();
+  setTimeout(()=>el.classList.remove("visible"),5000);
+}
+
+function updateStreak(){
+  const el=document.getElementById("streak");
+  const today=new Date().toDateString();
+  if(!state._lastDay){el.classList.remove("show");return;}
+  if(state._lastDay===today||(state._streak||0)>1){
+    el.classList.add("show");
+    document.getElementById("streak-n").textContent=state._streak||1;
+  }else el.classList.remove("show");
+}
+
+function recordActivity(){
+  const today=new Date().toDateString();
+  if(state._lastDay!==today){
+    const yest=new Date(Date.now()-86400000).toDateString();
+    state._streak=(state._lastDay===yest)?(state._streak||1)+1:1;
+    state._lastDay=today;
+  }
+}
+
+/* ---- Interactions ---- */
+function toggleTask(pi,ti){
+  const wasD=!!state[`${pi}_${ti}`];
+  state[`${pi}_${ti}`]=!wasD;
+  if(!wasD) recordActivity();
+  save();
+  refreshPhase(pi);
+  updateGlobal();
+  PHASES.forEach((_,i)=>{const el=document.getElementById(`p${i}`);if(el)applyFilter(el,i);});
+  if(!wasD) toast("Task completed ✓");
+}
+
+function togglePhase(pi){
+  state[`o${pi}`]=!state[`o${pi}`];
+  save();
+  const el=document.getElementById(`p${pi}`);
+  el.classList.toggle("open",!!state[`o${pi}`]);
+  document.getElementById(`ch${pi}`).textContent=state[`o${pi}`]?"▾":"▸";
+}
+
+function expandAll(){PHASES.forEach((_,pi)=>{state[`o${pi}`]=true;});save();render();}
+function collapseAll(){PHASES.forEach((_,pi)=>{state[`o${pi}`]=false;});save();render();}
+function askReset(){
+  if(!confirm("Reset all progress? This can't be undone."))return;
+  Object.keys(state).filter(k=>!k.startsWith("o")).forEach(k=>delete state[k]);
+  shownM.clear();
+  save();render();
+  toast("Progress reset");
+}
+
+function toast(msg){
+  const el=document.getElementById("toast");
+  el.textContent=msg;
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.classList.remove("show"),2200);
+}
+
+function spawnConfetti(){
+  const cols=["#5b9cf6","#4ade80","#fbbf24","#c084fc","#fb7185","#2dd4bf","#f97316"];
+  for(let i=0;i<90;i++){
+    setTimeout(()=>{
+      const el=document.createElement("div");
+      el.className="confetti-piece";
+      const sz=6+Math.random()*8;
+      el.style.cssText=`left:${8+Math.random()*84}vw;top:-${sz*2}px;width:${sz}px;height:${sz*(0.4+Math.random()*0.8)}px;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${1.4+Math.random()*2}s;animation-delay:${Math.random()*0.4}s;transform:rotate(${Math.random()*360}deg);border-radius:${Math.random()>.5?"50%":"3px"};`;
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),3200);
+    },i*18);
+  }
+}
+
+/* Filter tabs */
+document.querySelectorAll(".filter-tab").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".filter-tab").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    activeFilter=b.dataset.f;
+    PHASES.forEach((_,pi)=>{const el=document.getElementById(`p${pi}`);if(el)applyFilter(el,pi);});
+  });
+});
+
+/* Custom cursor */
+let cx=0,cy=0,rx=0,ry=0;
+const cur=document.getElementById("cursor"),curR=document.getElementById("cursor-ring");
+document.addEventListener("mousemove",e=>{cx=e.clientX;cy=e.clientY;});
+(function loop(){
+  cur.style.left=cx+"px";cur.style.top=cy+"px";
+  rx+=(cx-rx)*0.13;ry+=(cy-ry)*0.13;
+  curR.style.left=rx+"px";curR.style.top=ry+"px";
+  requestAnimationFrame(loop);
+})();
+document.addEventListener("mouseover",e=>{
+  if(e.target.closest(".task,.ctrl-btn,.filter-tab,.res-chip,.phase-header"))
+    document.body.classList.add("hovering");
+});
+document.addEventListener("mouseout",()=>document.body.classList.remove("hovering"));
+document.addEventListener("mouseleave",()=>{cur.style.opacity="0";curR.style.opacity="0";});
+document.addEventListener("mouseenter",()=>{cur.style.opacity="1";curR.style.opacity="1";});
+
+/* Keyboard shortcuts */
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT")return;
+  if(e.key==="e")expandAll();
+  if(e.key==="c")collapseAll();
+});
 
 load();
 render();
